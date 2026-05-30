@@ -1,0 +1,83 @@
+<%
+// feeds.ejs - RSS 源管理页
+// 变量: title, feeds, categories
+%>
+
+<div class="page-header">
+  <h1>📡 RSS 源管理</h1>
+  <div>
+    <button class="btn" onclick="toggleAll('enable')">全部启用</button>
+    <button class="btn" onclick="toggleAll('disable')">全部禁用</button>
+  </div>
+</div>
+
+<details class="add-feed">
+  <summary>+ 添加 RSS 源</summary>
+  <form method="POST" action="/feeds" class="add-feed-form">
+    <input type="text" name="name" placeholder="源名称" required>
+    <input type="url" name="url" placeholder="RSS URL" required>
+    <select name="category">
+      <% for (const [key, cat] of Object.entries(categories)) { %>
+        <option value="<%= key %>"><%= cat.icon %> <%= cat.name %></option>
+      <% } %>
+    </select>
+    <select name="language">
+      <option value="zh">中文</option>
+      <option value="en">English</option>
+    </select>
+    <button type="submit" class="btn btn-primary">添加</button>
+  </form>
+</details>
+
+<% for (const [catKey, cat] of Object.entries(categories)) { %>
+  <%
+    const catFeeds = feeds.filter(f => f.category === catKey);
+    if (catFeeds.length === 0) continue;
+  %>
+  <div class="feed-section">
+    <div class="feed-section-header">
+      <h2><%= cat.icon %> <%= cat.name %> (<%= catFeeds.length %>)</h2>
+      <button class="btn btn-sm" onclick="toggleCategory('<%= catKey %>', 'enable')">全部启用</button>
+      <button class="btn btn-sm" onclick="toggleCategory('<%= catKey %>', 'disable')">全部禁用</button>
+    </div>
+    <div class="feed-list">
+      <% catFeeds.forEach(feed => { %>
+        <div class="feed-item <%= feed.enabled ? '' : 'disabled' %>">
+          <div class="feed-info">
+            <strong><%= feed.name %></strong>
+            <span class="feed-url"><%= feed.url %></span>
+            <span class="feed-lang"><%= feed.language === 'zh' ? '中文' : 'EN' %></span>
+          </div>
+          <div class="feed-actions">
+            <span class="status-dot <%= feed.enabled ? 'active' : 'inactive' %>"></span>
+            <form method="POST" action="/feeds/<%= feed.id %>/update" style="display:inline">
+              <input type="hidden" name="enabled" value="<%= feed.enabled ? '0' : '1' %>">
+              <button type="submit" class="btn btn-sm"><%= feed.enabled ? '禁用' : '启用' %></button>
+            </form>
+            <form method="POST" action="/feeds/<%= feed.id %>/delete" style="display:inline"
+                  onsubmit="return confirm('确定删除 <%= feed.name %>？')">
+              <button type="submit" class="btn btn-sm btn-danger">删除</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+<% } %>
+
+<script>
+function toggleAll(action) {
+  fetch('/feeds/batch/toggle', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'action=' + action
+  }).then(() => location.reload());
+}
+function toggleCategory(category, action) {
+  fetch('/feeds/batch/toggle', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'action=' + action + '&category=' + category
+  }).then(() => location.reload());
+}
+</script>

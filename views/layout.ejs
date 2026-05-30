@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title ? title + " - " : "" %>每日资讯</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <link rel="stylesheet" href="/public/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">📰 每日资讯</a>
+      <div class="nav-links">
+        <a href="/" class="<%= activeNav === 'home' ? 'active' : '' %>">文章</a>
+        <a href="/feeds" class="<%= activeNav === 'feeds' ? 'active' : '' %>">RSS 源</a>
+        <a href="/settings" class="<%= activeNav === 'settings' ? 'active' : '' %>">设置</a>
+      </div>
+    </div>
+  </nav>
+  <main class="container">
+    <%- body %>
+  </main>
+</body>
+</html>

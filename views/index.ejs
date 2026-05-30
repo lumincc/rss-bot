@@ -1,0 +1,83 @@
+<%
+// index.ejs - 文章列表页
+// 变量: title, articles, siteName, currentCategory, categories
+%>
+
+<div class="page-header">
+  <h1>📰 <%= siteName %></h1>
+  <button class="btn btn-primary" onclick="runCollect(this)">
+    ⚡ 立即采集
+  </button>
+</div>
+
+<div id="collect-status"></div>
+
+<div class="tabs">
+  <a href="/" class="tab <%= currentCategory === '' ? 'active' : '' %>">全部</a>
+  <% for (const [key, cat] of Object.entries(categories)) { %>
+    <a href="/?category=<%= key %>" class="tab <%= currentCategory === key ? 'active' : '' %>">
+      <%= cat.icon %> <%= cat.name %>
+    </a>
+  <% } %>
+</div>
+
+<% if (articles.length === 0) { %>
+  <div class="empty">
+    <p>暂无文章</p>
+    <p class="hint">配置 API 后点击「立即采集」获取今日资讯</p>
+  </div>
+<% } else { %>
+  <div class="article-list">
+    <% articles.forEach(a => { %>
+      <a href="/article/<%= a.slug %>" class="article-card">
+        <div class="article-card-header">
+          <span class="badge"><%= (categories[a.category] || { icon: '📰' }).icon %> <%= (categories[a.category] || { name: a.category }).name %></span>
+          <span class="date"><%= new Date(a.created_at).toLocaleDateString('zh-CN') %></span>
+        </div>
+        <h2 class="article-title"><%= a.title %></h2>
+        <% if (a.excerpt) { %>
+          <p class="article-excerpt"><%= a.excerpt.slice(0, 150) %>...</p>
+        <% } %>
+        <div class="article-tags">
+          <% a.tagList.forEach(tag => { %>
+            <span class="tag">🏷️ <%= tag %></span>
+          <% }) %>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+<% } %>
+
+<script>
+async function runCollect(btn) {
+  btn.disabled = true;
+  btn.textContent = '⏳ 采集中...';
+  const statusEl = document.getElementById('collect-status');
+
+  try {
+    const res = await fetch('/collect', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+    const data = await res.json();
+
+    if (data.status === 'error') {
+      statusEl.innerHTML = '<div class="alert alert-error">❌ ' + data.error + '</div>';
+      return;
+    }
+
+    let html = '<div class="alert alert-success">✅ 采集完成</div><div class="collect-results">';
+    for (const [cat, result] of Object.entries(data.results || {})) {
+      const icon = result.status === 'success' ? '✅' : result.status === 'skipped' ? '⏭️' : '❌';
+      const detail = result.status === 'success' ? result.title : (result.reason || result.error || '');
+      html += '<div>' + icon + ' <strong>' + cat + '</strong>: ' + detail + '</div>';
+    }
+    html += '</div>';
+    statusEl.innerHTML = html;
+
+    setTimeout(() => location.reload(), 2000);
+  } catch (e) {
+    statusEl.innerHTML = '<div class="alert alert-error">❌ ' + e.message + '</div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⚡ 立即采集';
+  }
+}
+</script>

@@ -1,0 +1,29 @@
+<%
+// article.ejs - 文章详情页
+// 变量: title, article, categoryName, categoryIcon
+%>
+
+<a href="/" class="back-link">← 返回首页</a>
+
+<article class="article-detail">
+  <header class="article-detail-header">
+    <div class="article-meta">
+      <span class="badge"><%= categoryIcon %> <%= categoryName %></span>
+      <span class="date"><%= new Date(article.created_at).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+    </div>
+    <h1 class="article-detail-title"><%= article.title %></h1>
+    <div class="article-tags">
+      <% article.tagList.forEach(tag => { %>
+        <span class="tag">🏷️ <%= tag %></span>
+      <% }) %>
+    </div>
+  </header>
+
+  <div class="markdown-body">
+    <%- article.content %>
+  </div>
+</article>
+
+<form method="POST" action="/article/<%= article.slug %>/delete" style="margin-top: 2rem;">
+  <button type="submit" class="btn btn-danger" onclick="return confirm('确定删除这篇文章？')">🗑️ 删除文章</button>
+</form>

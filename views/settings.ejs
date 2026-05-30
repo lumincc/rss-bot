@@ -1,0 +1,79 @@
+<%
+// settings.ejs - 设置页
+// 变量: title, settings
+%>
+
+<h1>⚙️ 设置</h1>
+
+<div class="settings-grid">
+  <section class="settings-card">
+    <h2>🔑 API 配置</h2>
+    <form method="POST" action="/settings/api">
+      <div class="form-group">
+        <label>API Base URL</label>
+        <input type="text" name="api_base_url" value="<%= settings.api.api_base_url %>" placeholder="https://api.openai.com">
+        <small>OpenAI 兼容 API 地址（不带 /v1）</small>
+      </div>
+      <div class="form-group">
+        <label>API Key</label>
+        <input type="password" name="api_key" value="<%= settings.api.api_key %>" placeholder="sk-...">
+      </div>
+      <div class="form-group">
+        <label>模型</label>
+        <input type="text" name="model" value="<%= settings.api.model %>" placeholder="gpt-4o-mini">
+      </div>
+      <button type="submit" class="btn btn-primary">保存 API 配置</button>
+    </form>
+  </section>
+
+  <section class="settings-card">
+    <h2>⏰ 定时任务</h2>
+    <form method="POST" action="/settings/schedule">
+      <div class="form-group">
+        <label>
+          <input type="hidden" name="enabled" value="0">
+          <input type="checkbox" name="enabled" value="1" <%= settings.schedule.enabled ? 'checked' : '' %>>
+          启用定时采集
+        </label>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>小时</label>
+          <input type="number" name="cron_hour" value="<%= settings.schedule.cron_hour %>" min="0" max="23">
+        </div>
+        <div class="form-group">
+          <label>分钟</label>
+          <input type="number" name="cron_minute" value="<%= settings.schedule.cron_minute %>" min="0" max="59">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>时区</label>
+        <input type="text" name="timezone" value="<%= settings.schedule.timezone %>" placeholder="Asia/Shanghai">
+      </div>
+      <button type="submit" class="btn btn-primary">保存定时配置</button>
+    </form>
+  </section>
+
+  <section class="settings-card">
+    <h2>📋 通用设置</h2>
+    <form method="POST" action="/settings/general">
+      <div class="form-group">
+        <label>站点名称</label>
+        <input type="text" name="site_name" value="<%= settings.general.site_name %>">
+      </div>
+      <div class="form-group">
+        <label>每个源最大文章数</label>
+        <input type="number" name="max_articles_per_source" value="<%= settings.general.max_articles_per_source %>" min="1" max="50">
+      </div>
+      <div class="form-group">
+        <label>每类最大文章数</label>
+        <input type="number" name="max_articles_per_category" value="<%= settings.general.max_articles_per_category %>" min="1" max="100">
+      </div>
+      <div class="form-group">
+        <label>文章最大时效（小时）</label>
+        <input type="number" name="article_max_age_hours" value="<%= settings.general.article_max_age_hours %>" min="1" max="168">
+      </div>
+      <button type="submit" class="btn btn-primary">保存通用设置</button>
+    </form>
+  </section>
+</div>

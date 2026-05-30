@@ -1,0 +1,29 @@
+{
+  "name": "rss-bot",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "轻量级 AI 驱动每日资讯自动推送系统",
+  "scripts": {
+    "dev": "tsx watch src/app.ts",
+    "start": "node dist/app.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "better-sqlite3": "^11.7.0",
+    "ejs": "^3.1.10",
+    "hono": "^4.6.16",
+    "isomorphic-dompurify": "^3.15.0",
+    "node-cron": "^3.0.3",
+    "openai": "^4.77.3",
+    "rss-parser": "^3.13.0",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/ejs": "^3.1.5",
+    "@types/node": "^22.10.5",
+    "@types/node-cron": "^3.0.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
